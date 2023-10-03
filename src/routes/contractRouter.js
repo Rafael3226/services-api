@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
-const { getContractById } = require("../controllers/contractController");
+const contractController = require("../controllers/contractsController");
 
-router.get("/:id", getContractById);
+router.get("/:id", contractController.getContractById);
 
 module.exports = router;
