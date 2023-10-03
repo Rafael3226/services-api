@@ -28,3 +28,28 @@ describe("Get Contract by id", () => {
     expect(response.statusCode).toBe(404);
   });
 });
+
+describe("Get Contracts", () => {
+  it("should find 1 contract with profile 1", async () => {
+    const response = await request(app)
+      .get("/contracts")
+      .set("profile_id", "1");
+    expect(response.statusCode).toBe(200);
+    expect(response.body.length).toBe(1);
+  });
+
+  it("should find 2 contracts with profile 2", async () => {
+    const response = await request(app)
+      .get("/contracts")
+      .set("profile_id", "2");
+    expect(response.statusCode).toBe(200);
+    expect(response.body.length).toBe(2);
+  });
+
+  it("should NOT find contracts with profile 5 (Undefined)", async () => {
+    const response = await request(app)
+      .get("/contracts")
+      .set("profile_id", "5");
+    expect(response.statusCode).toBe(404);
+  });
+});
