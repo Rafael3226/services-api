@@ -1,6 +1,6 @@
 const { describe, it, expect } = require("@jest/globals");
 const request = require("supertest");
-const app = require("../../app");
+const app = require("../app");
 
 describe("Get unpaid jobs", () => {
   it("should find unpaid jobs with prifile 1", async () => {

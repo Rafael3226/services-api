@@ -1,6 +1,6 @@
 const { describe, it, expect } = require("@jest/globals");
 const request = require("supertest");
-const app = require("../../app");
+const app = require("../app");
 
 describe("Get Contract by id", () => {
   it("should find the contract with id 1 and profile 1", async () => {
