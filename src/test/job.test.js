@@ -24,3 +24,32 @@ describe("Get unpaid jobs", () => {
     expect(response.statusCode).toBe(404);
   });
 });
+
+describe("Pay for a job", () => {
+  it("should succesfully pay for job with id 1", async () => {
+    const response = await request(app)
+      .post("/jobs/1/pay")
+      .set("profile_id", "1");
+    expect(response.statusCode).toBe(200);
+    expect(response.body.id).toBe(1);
+    expect(response.body.paid).toBe(true);
+  });
+  it("should throw error when job is paid", async () => {
+    const response = await request(app)
+      .post("/jobs/1/pay")
+      .set("profile_id", "1");
+    expect(response.statusCode).toBe(400);
+  });
+  it("should NOT found jobs from other clients", async () => {
+    const response = await request(app)
+      .post("/jobs/1/pay")
+      .set("profile_id", "2");
+    expect(response.statusCode).toBe(404);
+  });
+  it("should throw error when no fonds", async () => {
+    const response = await request(app)
+      .post("/jobs/5/pay")
+      .set("profile_id", "4");
+    expect(response.statusCode).toBe(402);
+  });
+});
