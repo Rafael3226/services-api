@@ -65,7 +65,7 @@ module.exports.payJob = async function ({ id, ClientId }) {
     await job.save({ transaction });
 
     return {
-      id,
+      id: job.id,
       description: job.description,
       price: job.price,
       paid: job.paid,
