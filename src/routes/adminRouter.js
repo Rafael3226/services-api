@@ -3,5 +3,6 @@ const router = express.Router();
 const adminController = require("../controllers/adminController");
 
 router.get("/best-profession", adminController.getBestProfession);
+router.get("/best-clients", adminController.getBestClient);
 
 module.exports = router;

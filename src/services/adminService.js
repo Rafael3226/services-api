@@ -32,3 +32,28 @@ module.exports.getBestProfession = async function ({ start, end }) {
     });
   });
 };
+
+module.exports.getBestClient = async function ({ start, end, limit = 2 }) {
+  // Parse start and end dates as JavaScript Date objects
+  const startDate = new Date(start);
+  const endDate = new Date(end);
+  if (startDate > endDate) throw new BadRequestError(errorMessages.dateError);
+
+  return await sequelize.transaction(async (transaction) => {
+    return await sequelize.query(
+      `SELECT Profiles.*, SUM(Jobs.price) as totalSpends FROM Profiles
+       INNER JOIN Contracts ON Profiles.id = Contracts.ClientId
+       INNER JOIN Jobs ON Contracts.id = Jobs.ContractId
+       WHERE Jobs.paid = 1 
+       AND paymentDate BETWEEN :start AND :end
+       GROUP BY Profiles.id
+       ORDER BY totalSpends DESC
+       LIMIT :limit;`,
+      {
+        replacements: { start, end, limit },
+        type: sequelize.QueryTypes.SELECT,
+        transaction,
+      }
+    );
+  });
+};
