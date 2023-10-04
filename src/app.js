@@ -13,5 +13,6 @@ app.use(getProfile);
 
 app.use("/contracts", routes.contractRouter);
 app.use("/jobs", routes.jobRouter);
+app.use("/balances", routes.balanceRouter);
 
 module.exports = app;
