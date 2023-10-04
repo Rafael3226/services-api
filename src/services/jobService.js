@@ -64,6 +64,22 @@ module.exports.payJob = async function ({ id, ClientId }) {
     await contractor.save({ transaction });
     await job.save({ transaction });
 
-    return job;
+    const {
+      description,
+      price,
+      paid,
+      paymentDate,
+      ContractId: contractId,
+      Client: { clientBalance },
+    } = job;
+    return {
+      id,
+      description,
+      price,
+      paid,
+      paymentDate,
+      contractId,
+      clientBalance,
+    };
   });
 };
