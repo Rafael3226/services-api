@@ -1,4 +1,7 @@
-const { Op } = require("sequelize");
+const {
+  getContractById,
+  getContracts,
+} = require("../services/contractService");
 
 /**
  * Returns the contract only if it belongs to the profile calling.
@@ -6,16 +9,15 @@ const { Op } = require("sequelize");
  * @returns contract by id
  */
 module.exports.getContractById = async (req, res) => {
-  const { Contract } = req.app.get("models");
-  const { id: contractId } = req.params;
-  const { id: profileId } = req.profile;
-
-  const contract = await Contract.findOne({
-    where: { ClientId: profileId, id: contractId },
-  });
-
-  if (!contract) return res.status(404).end();
-  res.json(contract);
+  const { id } = req.params;
+  const { id: ClientId } = req.profile;
+  try {
+    const contract = await getContractById({ id, ClientId });
+    res.json(contract);
+  } catch (error) {
+    const errorOjb = { error: { message: error.message, ...error } };
+    res.status(error.code || 500).json(errorOjb);
+  }
 };
 
 /**
@@ -25,16 +27,12 @@ module.exports.getContractById = async (req, res) => {
  * @returns list of contracts
  */
 module.exports.getContracts = async (req, res) => {
-  const { Contract } = req.app.get("models");
   const { id: profileId } = req.profile;
-
-  const contract = await Contract.findAll({
-    where: {
-      [Op.or]: [{ ClientId: profileId }, { ContractorId: profileId }],
-      [Op.not]: [{ status: "terminated" }],
-    },
-  });
-
-  if (contract.length === 0) return res.status(404).end();
-  res.json(contract);
+  try {
+    const contracts = await getContracts({ profileId });
+    res.json(contracts);
+  } catch (error) {
+    const errorOjb = { error: { message: error.message, ...error } };
+    res.status(error.code || 500).json(errorOjb);
+  }
 };
