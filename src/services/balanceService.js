@@ -8,6 +8,7 @@ const errorMessages = {
   amountOverLimint:
     "Client can't deposit more than 25% of his total unpaid jobs.",
 };
+module.exports.errorMessages = errorMessages;
 
 module.exports.depositMoney = async function ({ userId, amount }) {
   if (amount <= 0) throw new BadRequestError(errorMessages.amountNotNegative);
