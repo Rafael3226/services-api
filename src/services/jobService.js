@@ -6,26 +6,36 @@ const {
   BadRequestError,
 } = require("../errors");
 
-module.exports.getUnpaidJobs = async function ({ profileId }) {
-  const jobs = await Job.findAll({
-    include: {
-      model: Contract,
-      attributes: ["ContractorId", "ClientId"],
-      where: {
-        [Op.or]: [{ ClientId: profileId }, { ContractorId: profileId }],
-      },
-    },
-    where: {
-      paid: {
-        [Op.not]: true,
-      },
-    },
-  });
+const jobMessages = {
+  notFound: "Job(s) not found",
+  alreadyPaid: "Job already paid",
+  insufficientBalance: "Insufficient balance",
+};
+module.exports.jobMessages = jobMessages;
 
-  return jobs;
+module.exports.getUnpaidJobs = async ({ profileId }) => {
+  return sequelize.transaction(async (transaction) => {
+    const jobs = await Job.findAll({
+      include: {
+        model: Contract,
+        attributes: ["ContractorId", "ClientId"],
+        where: {
+          [Op.or]: [{ ClientId: profileId }, { ContractorId: profileId }],
+        },
+      },
+      where: {
+        paid: {
+          [Op.not]: true,
+        },
+      },
+      transaction,
+    });
+    if (jobs.length === 0) throw new NotFoundError(jobMessages.notFound);
+    return jobs;
+  });
 };
 
-module.exports.payJob = async function ({ id, ClientId }) {
+module.exports.payJob = async ({ id, ClientId }) => {
   return sequelize.transaction(async (transaction) => {
     // Find the job by jobId and include its contract
     // and the associated client and contractor profiles
@@ -43,16 +53,15 @@ module.exports.payJob = async function ({ id, ClientId }) {
       ],
     });
 
-    if (!job) throw new NotFoundError("Job not found");
-    if (job.paid) throw new BadRequestError("Job already paid");
+    if (!job) throw new NotFoundError(jobMessages.notFound);
+    if (job.paid) throw new BadRequestError(jobMessages.alreadyPaid);
 
     const client = job.Contract.Client;
     const contractor = job.Contract.Contractor;
 
     // Check if the client has enough balance to pay for the job
-    if (client.balance < job.price) {
-      throw new PaymentRequiredError("Insufficient balance");
-    }
+    if (client.balance < job.price)
+      throw new PaymentRequiredError(jobMessages.insufficientBalance);
 
     client.balance -= job.price;
     contractor.balance += job.price;

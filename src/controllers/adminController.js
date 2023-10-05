@@ -8,14 +8,13 @@ const {
  * for any contactor that worked in the query time range.
  * @returns profession
  */
-module.exports.getBestProfession = async (req, res) => {
+module.exports.getBestProfession = async (req, res, next) => {
   try {
     const { start, end } = req.query;
     const profession = await getBestProfession({ start, end });
     res.json(profession);
   } catch (error) {
-    const errorOjb = { error: { message: error.message, ...error } };
-    res.status(error.code || 500).json(errorOjb);
+    next(error);
   }
 };
 
@@ -24,13 +23,12 @@ module.exports.getBestProfession = async (req, res) => {
  * limit query parameter should be applied, default limit is 2.
  * @returns client
  */
-module.exports.getBestClient = async (req, res) => {
+module.exports.getBestClient = async (req, res, next) => {
   try {
     const { start, end, limit } = req.query;
     const clients = await getBestClient({ start, end, limit });
     res.json(clients);
   } catch (error) {
-    const errorOjb = { error: { message: error.message, ...error } };
-    res.status(error.code || 500).json(errorOjb);
+    next(error);
   }
 };

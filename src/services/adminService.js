@@ -6,7 +6,7 @@ const errorMessages = {
 };
 module.exports.errorMessages = errorMessages;
 
-module.exports.getBestProfession = async function ({ start, end }) {
+module.exports.getBestProfession = async ({ start, end }) => {
   // Parse start and end dates as JavaScript Date objects
   const startDate = new Date(start);
   const endDate = new Date(end);
@@ -33,7 +33,7 @@ module.exports.getBestProfession = async function ({ start, end }) {
   });
 };
 
-module.exports.getBestClient = async function ({ start, end, limit = 2 }) {
+module.exports.getBestClient = async ({ start, end, limit = 2 }) => {
   // Parse start and end dates as JavaScript Date objects
   const startDate = new Date(start);
   const endDate = new Date(end);

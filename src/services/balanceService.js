@@ -10,7 +10,7 @@ const errorMessages = {
 };
 module.exports.errorMessages = errorMessages;
 
-module.exports.depositMoney = async function ({ userId, amount }) {
+module.exports.depositMoney = async ({ userId, amount }) => {
   if (amount <= 0) throw new BadRequestError(errorMessages.amountNotNegative);
   return sequelize.transaction(async (transaction) => {
     const unpaidJobs = await Job.findAll({
